@@ -7,7 +7,7 @@ import './AuthPage.css';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { login, setLoading } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,7 +15,7 @@ const SignupPage = () => {
     role: 'student',
   });
   const [errors, setErrors] = useState({});
-  const [loading, setLoadingLocal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +40,7 @@ const SignupPage = () => {
       return;
     }
 
-    setLoadingLocal(true);
+    setLoading(true);
     try {
       const response = await api.post('/auth/register', formData);
       const { token, user } = response.data;
@@ -51,7 +51,7 @@ const SignupPage = () => {
         submit: error.response?.data?.message || 'Registration failed',
       });
     } finally {
-      setLoadingLocal(false);
+      setLoading(false);
     }
   };
 

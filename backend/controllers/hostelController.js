@@ -208,3 +208,78 @@ exports.getOwnerHostels = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Upload hostel photos (Owner only)
+exports.uploadHostelPhoto = async (req, res) => {
+  try {
+    const hostel = await Hostel.findById(req.params.id);
+
+    if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+
+    // Check if user is the owner
+    if (hostel.owner.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized to upload photos for this hostel' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    // Add photo path to hostel's images array
+    const photoPath = `/uploads/${req.file.filename}`;
+    hostel.images.push(photoPath);
+    await hostel.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Photo uploaded successfully',
+      image: photoPath,
+      hostel,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete hostel photo (Owner only)
+exports.deleteHostelPhoto = async (req, res) => {
+  try {
+    const hostel = await Hostel.findById(req.params.id);
+
+    if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+
+    // Check if user is the owner
+    if (hostel.owner.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized to delete photos from this hostel' });
+    }
+
+    const { imageUrl } = req.body;
+    if (!imageUrl) {
+      return res.status(400).json({ success: false, message: 'Please provide image URL' });
+    }
+
+    // Remove photo from hostel's images array
+    hostel.images = hostel.images.filter((img) => img !== imageUrl);
+    await hostel.save();
+
+    // Delete file from uploads folder
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '../' + imageUrl);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Photo deleted successfully',
+      hostel,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

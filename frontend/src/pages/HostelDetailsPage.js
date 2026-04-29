@@ -14,6 +14,7 @@ const HostelDetailsPage = () => {
   const [message, setMessage] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [mainImage, setMainImage] = useState(0);
 
   useEffect(() => {
     fetchHostel();
@@ -80,9 +81,33 @@ const HostelDetailsPage = () => {
       <div className="details-container">
         <div className="images-section">
           {hostel.images && hostel.images.length > 0 ? (
-            <div className="main-image">
-              <img src={hostel.images[0]} alt={hostel.name} />
-            </div>
+            <>
+              <div className="main-image">
+                <img
+                  src={`http://localhost:5000${hostel.images[mainImage]}`}
+                  alt={`${hostel.name} - ${mainImage + 1}`}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/300?text=No+Image';
+                  }}
+                />
+              </div>
+              {hostel.images.length > 1 && (
+                <div className="thumbnail-gallery">
+                  {hostel.images.map((image, idx) => (
+                    <img
+                      key={idx}
+                      src={`http://localhost:5000${image}`}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className={`thumbnail ${idx === mainImage ? 'active' : ''}`}
+                      onClick={() => setMainImage(idx)}
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/80?text=No+Image';
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
             <div className="no-image">No Images Available</div>
           )}

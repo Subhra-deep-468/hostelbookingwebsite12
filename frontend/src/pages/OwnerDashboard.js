@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import PhotoUpload from '../components/PhotoUpload';
 import './OwnerDashboard.css';
 
 const OwnerDashboard = () => {
@@ -123,6 +124,24 @@ const OwnerDashboard = () => {
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add hostel');
     }
+  };
+
+  const handleDeletePhoto = async (hostelId, imageUrl) => {
+    if (window.confirm('Are you sure you want to delete this photo?')) {
+      try {
+        await api.delete(`/hostels/${hostelId}/photos`, {
+          data: { imageUrl },
+        });
+        fetchHostels();
+        alert('Photo deleted successfully!');
+      } catch (err) {
+        alert('Failed to delete photo');
+      }
+    }
+  };
+
+  const handlePhotoUploadSuccess = (updatedHostel) => {
+    setHostels(hostels.map((h) => (h._id === updatedHostel._id ? updatedHostel : h)));
   };
 
   return (
@@ -313,6 +332,36 @@ const OwnerDashboard = () => {
                   <p>
                     <strong>Description:</strong> {hostel.description.substring(0, 100)}...
                   </p>
+
+                  {/* Photo Gallery */}
+                  {hostel.images && hostel.images.length > 0 && (
+                    <div className="photo-gallery">
+                      {hostel.images.map((image, idx) => (
+                        <div key={idx} className="photo-item">
+                          <img
+                            src={`http://localhost:5000${image}`}
+                            alt={`${hostel.name} - ${idx + 1}`}
+                            onError={(e) => {
+                              e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+                            }}
+                          />
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleDeletePhoto(hostel._id, image)}
+                            title="Delete photo"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Photo Upload */}
+                  <PhotoUpload
+                    hostelId={hostel._id}
+                    onPhotoUploadSuccess={handlePhotoUploadSuccess}
+                  />
                 </div>
               ))}
             </div>
