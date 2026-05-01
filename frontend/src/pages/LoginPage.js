@@ -55,8 +55,11 @@ const LoginPage = () => {
       login(user, token);
       navigate('/');
     } catch (error) {
+      const isNetworkError = !error.response;
       setErrors({
-        submit: error.response?.data?.message || 'Login failed',
+        submit: isNetworkError
+          ? 'Cannot reach server. Start backend (http://localhost:5000) and try again.'
+          : error.response?.data?.message || 'Login failed',
       });
     } finally {
       setLoading(false);

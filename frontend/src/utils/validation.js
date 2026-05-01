@@ -7,7 +7,13 @@ export const validatePassword = (password) => {
   return password.length >= 6;
 };
 
-export const validateForm = (name, email, password) => {
+export const validatePhone = (phone) => {
+  if (!phone) return false;
+  const digits = String(phone).replace(/[^\d]/g, '');
+  return digits.length >= 10 && digits.length <= 15;
+};
+
+export const validateForm = (name, email, password, role, phone) => {
   const errors = {};
 
   if (!name.trim()) {
@@ -24,6 +30,14 @@ export const validateForm = (name, email, password) => {
     errors.password = 'Password is required';
   } else if (!validatePassword(password)) {
     errors.password = 'Password must be at least 6 characters';
+  }
+
+  if (role === 'owner') {
+    if (!String(phone || '').trim()) {
+      errors.phone = 'Phone number is required for owners';
+    } else if (!validatePhone(phone)) {
+      errors.phone = 'Enter a valid phone number';
+    }
   }
 
   return errors;

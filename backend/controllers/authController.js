@@ -4,7 +4,7 @@ const { generateToken } = require('../config/jwt');
 // Register User
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone } = req.body;
 
     // Validation
     if (!name || !email || !password) {
@@ -23,6 +23,7 @@ exports.register = async (req, res) => {
       email,
       password,
       role: role || 'student',
+      ...(phone ? { phone } : {}),
     });
 
     // Generate token
@@ -36,6 +37,7 @@ exports.register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
       },
     });
   } catch (error) {

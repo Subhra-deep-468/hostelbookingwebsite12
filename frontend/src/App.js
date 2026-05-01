@@ -46,22 +46,24 @@ function App() {
     <Router>
       <div className="App">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/hostel/:id" element={<HostelDetailsPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route
-            path="/student-dashboard"
-            element={<ProtectedRoute element={<StudentDashboard />} requiredRole="student" />}
-          />
-          <Route
-            path="/owner-dashboard"
-            element={<ProtectedRoute element={<OwnerDashboard />} requiredRole="owner" />}
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        <main className="app-main">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="/hostel/:id" element={<HostelDetailsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route
+              path="/student-dashboard"
+              element={<ProtectedRoute element={<StudentDashboard />} requiredRole="student" />}
+            />
+            <Route
+              path="/owner-dashboard"
+              element={<ProtectedRoute element={<OwnerDashboard />} requiredRole="owner" />}
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );

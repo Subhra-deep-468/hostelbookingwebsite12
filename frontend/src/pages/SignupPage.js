@@ -13,6 +13,7 @@ const SignupPage = () => {
     email: '',
     password: '',
     role: 'student',
+    phone: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,7 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formErrors = validateForm(formData.name, formData.email, formData.password);
+    const formErrors = validateForm(formData.name, formData.email, formData.password, formData.role, formData.phone);
 
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
@@ -47,8 +48,11 @@ const SignupPage = () => {
       login(user, token);
       navigate('/');
     } catch (error) {
+      const isNetworkError = !error.response;
       setErrors({
-        submit: error.response?.data?.message || 'Registration failed',
+        submit: isNetworkError
+          ? 'Cannot reach server. Start backend (http://localhost:5000) and try again.'
+          : error.response?.data?.message || 'Registration failed',
       });
     } finally {
       setLoading(false);
@@ -108,6 +112,22 @@ const SignupPage = () => {
               <option value="owner">Hostel Owner</option>
             </select>
           </div>
+
+          {formData.role === 'owner' && (
+            <div className="form-group">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Enter your phone number"
+                className={errors.phone ? 'input-error' : ''}
+                autoComplete="tel"
+              />
+              {errors.phone && <span className="error-text">{errors.phone}</span>}
+            </div>
+          )}
 
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? 'Creating Account...' : 'Sign Up'}

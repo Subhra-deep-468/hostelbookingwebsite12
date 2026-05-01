@@ -1,20 +1,21 @@
 .hostel-card {
-  background: white;
-  border-radius: 8px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hostel-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
 }
 
 .hostel-image {
   height: 200px;
   overflow: hidden;
-  background-color: #f0f0f0;
+  background-color: rgba(15, 23, 42, 0.06);
 }
 
 .hostel-image img {
@@ -29,8 +30,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ddd;
-  color: #666;
+  background-color: rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.55);
   font-weight: bold;
 }
 
@@ -41,17 +42,18 @@
 .hostel-info h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.3rem;
-  color: #2c3e50;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .location {
-  color: #7f8c8d;
+  color: var(--muted);
   margin: 0 0 0.5rem 0;
   font-size: 0.95rem;
 }
 
 .description {
-  color: #95a5a6;
+  color: rgba(15, 23, 42, 0.62);
   margin: 0 0 1rem 0;
   font-size: 0.9rem;
   line-height: 1.4;
@@ -65,11 +67,12 @@
 }
 
 .amenity-tag {
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
+  background-color: rgba(79, 70, 229, 0.08);
+  color: rgba(15, 23, 42, 0.82);
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
   font-size: 0.8rem;
+  border: 1px solid rgba(79, 70, 229, 0.14);
 }
 
 .hostel-footer {
@@ -81,18 +84,20 @@
 .price {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #e74c3c;
+  color: var(--text);
 }
 
 .btn-view {
-  background-color: #3498db;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: var(--primary-contrast);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: filter 0.2s, transform 0.2s;
+  font-weight: 700;
 }
 
 .btn-view:hover {
-  background-color: #2980b9;
+  filter: brightness(0.98);
+  transform: translateY(-1px);
 }
