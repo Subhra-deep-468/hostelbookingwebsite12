@@ -79,6 +79,11 @@ const hostelSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    approvalStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
+    },
     createdAt: {
       type: Date,
       default: Date.now,

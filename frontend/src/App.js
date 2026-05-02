@@ -9,10 +9,11 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import StudentDashboard from './pages/StudentDashboard';
 import OwnerDashboard from './pages/OwnerDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import DummyPaymentPage from './pages/DummyPaymentPage';
 import './App.css';
 
-const ProtectedRoute = ({ element, requiredRole }) => {
+const ProtectedRoute = ({ element, requiredRole, allowedRoles }) => {
   const { user, initializing } = useContext(AuthContext);
 
   if (initializing) {
@@ -27,7 +28,8 @@ const ProtectedRoute = ({ element, requiredRole }) => {
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
+  const roles = allowedRoles ?? (requiredRole ? [requiredRole] : null);
+  if (roles && !roles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 
@@ -53,6 +55,10 @@ function App() {
             <Route
               path="/owner-dashboard"
               element={<ProtectedRoute element={<OwnerDashboard />} requiredRole="owner" />}
+            />
+            <Route
+              path="/admin-dashboard"
+              element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={['admin']} />}
             />
             <Route path="/dummy-payment" element={<ProtectedRoute element={<DummyPaymentPage />} />} />
             <Route path="*" element={<Navigate to="/" />} />

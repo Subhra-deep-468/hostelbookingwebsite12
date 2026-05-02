@@ -120,7 +120,7 @@ const OwnerDashboard = () => {
       });
       setShowForm(false);
       fetchHostels();
-      alert('Hostel added successfully!');
+      alert('Hostel submitted. Students will see it in search after an administrator approves it.');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add hostel');
     }
@@ -329,7 +329,19 @@ const OwnerDashboard = () => {
             <div className="hostels-list">
               {hostels.map((hostel) => (
                 <div key={hostel._id} className="hostel-item">
-                  <h3>{hostel.name}</h3>
+                  <h3>
+                    {hostel.name}
+                    <span
+                      className={`approval-badge ${hostel.approvalStatus || 'approved'}`}
+                      title="Listing visibility"
+                    >
+                      {(hostel.approvalStatus === 'pending' && 'Awaiting admin approval') ||
+                        (hostel.approvalStatus === 'rejected' && 'Rejected by admin') ||
+                        (!hostel.approvalStatus || hostel.approvalStatus === 'approved'
+                          ? 'Live for students'
+                          : hostel.approvalStatus)}
+                    </span>
+                  </h3>
                   <p>
                     <strong>Location:</strong> {hostel.location}
                   </p>

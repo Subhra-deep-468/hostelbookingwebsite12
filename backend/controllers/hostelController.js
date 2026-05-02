@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Hostel = require('../models/Hostel');
+const { hostelIsPubliclyVisible, canViewUnpublishedHostel } = require('../utils/hostelVisibility');
 
 // Create a new hostel (Owner only)
 exports.createHostel = async (req, res) => {
@@ -22,6 +23,7 @@ exports.createHostel = async (req, res) => {
       roomTypes,
       amenities,
       images,
+      approvalStatus: 'pending',
     });
 
     res.status(201).json({
@@ -38,7 +40,10 @@ exports.getHostels = async (req, res) => {
   try {
     const { city, area, minPrice, maxPrice, roomType, amenity, sort } = req.query;
 
-    let filter = { isActive: true };
+    let filter = {
+      isActive: true,
+      $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }, { approvalStatus: null }],
+    };
 
     if (city) {
       filter.city = city.toLowerCase();
@@ -124,12 +129,16 @@ exports.getHostels = async (req, res) => {
   }
 };
 
-// Get single hostel
+// Get single hostel (students/public only if admin-approved)
 exports.getHostelById = async (req, res) => {
   try {
     const hostel = await Hostel.findById(req.params.id).populate('owner', 'name email phone');
 
     if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+
+    if (!hostelIsPubliclyVisible(hostel) && !canViewUnpublishedHostel(hostel, req.user)) {
       return res.status(404).json({ success: false, message: 'Hostel not found' });
     }
 
@@ -156,7 +165,14 @@ exports.updateHostel = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to update this hostel' });
     }
 
-    hostel = await Hostel.findByIdAndUpdate(req.params.id, req.body, {
+    const updates = { ...req.body };
+    delete updates.approvalStatus;
+    delete updates.owner;
+    if (hostel.approvalStatus === 'rejected') {
+      updates.approvalStatus = 'pending';
+    }
+
+    hostel = await Hostel.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
     });
@@ -281,6 +297,59 @@ exports.deleteHostelPhoto = async (req, res) => {
       message: 'Photo deleted successfully',
       hostel,
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: hostels awaiting approval
+exports.getPendingHostels = async (req, res) => {
+  try {
+    const hostels = await Hostel.find({ approvalStatus: 'pending' })
+      .populate('owner', 'name email phone')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: hostels.length,
+      hostels,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.approveHostel = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid hostel id' });
+    }
+    const hostel = await Hostel.findById(req.params.id);
+    if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+    hostel.approvalStatus = 'approved';
+    await hostel.save();
+    const updated = await Hostel.findById(hostel._id).populate('owner', 'name email phone');
+    res.status(200).json({ success: true, message: 'Hostel approved', hostel: updated });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.rejectHostel = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid hostel id' });
+    }
+    const hostel = await Hostel.findById(req.params.id);
+    if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+    hostel.approvalStatus = 'rejected';
+    await hostel.save();
+    const updated = await Hostel.findById(hostel._id).populate('owner', 'name email phone');
+    res.status(200).json({ success: true, message: 'Hostel rejected', hostel: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

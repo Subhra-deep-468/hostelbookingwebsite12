@@ -10,7 +10,7 @@ router.post('/apply', protect, authorize('owner'), applyForOwnerVerification);
 // Get owner verification status
 router.get('/status', protect, getOwnerStatus);
 
-// Verify owner (Admin - can be called directly for demo)
-router.put('/verify/:userId', verifyOwner);
+// Verify owner (admin only)
+router.put('/verify/:userId', protect, authorize('admin'), verifyOwner);
 
 module.exports = router;

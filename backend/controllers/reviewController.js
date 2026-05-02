@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Review = require('../models/Review');
 const Booking = require('../models/Booking');
 const Hostel = require('../models/Hostel');
+const { hostelIsPubliclyVisible, canViewUnpublishedHostel } = require('../utils/hostelVisibility');
 
 async function recalcHostelRating(hostelId) {
   const oid = new mongoose.Types.ObjectId(hostelId);
@@ -22,8 +23,12 @@ exports.getHostelReviews = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid hostel id' });
     }
 
-    const hostel = await Hostel.findById(hostelId).select('_id');
+    const hostel = await Hostel.findById(hostelId).select('_id approvalStatus owner');
     if (!hostel) {
+      return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+
+    if (!hostelIsPubliclyVisible(hostel) && !canViewUnpublishedHostel(hostel, req.user)) {
       return res.status(404).json({ success: false, message: 'Hostel not found' });
     }
 

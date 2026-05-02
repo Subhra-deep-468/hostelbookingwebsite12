@@ -1,0 +1,9 @@
+PORT=5000
+MONGODB_URL=mongodb://localhost:27017/hostel-booking
+JWT_SECRET=change-me
+JWT_EXPIRE=7d
+
+# Optional — live Razorpay (Indian Rupees). If omitted, the app uses a demo checkout.
+# Get keys from https://dashboard.razorpay.com/app/keys (use Test mode keys for development).
+RAZORPAY_KEY_ID=rzp_test_SkP5EgCusyujiZ 
+RAZORPAY_KEY_SECRET=pWnqqLvsi0qxT8IHf0SEzLNF

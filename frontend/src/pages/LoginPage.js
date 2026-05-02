@@ -53,7 +53,11 @@ const LoginPage = () => {
       const response = await api.post('/auth/login', formData);
       const { token, user } = response.data;
       login(user, token);
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       const isNetworkError = !error.response;
       setErrors({

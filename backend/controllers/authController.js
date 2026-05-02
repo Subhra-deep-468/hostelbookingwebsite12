@@ -17,12 +17,15 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
 
+    const allowedRoles = ['student', 'owner', 'admin'];
+    const resolvedRole = allowedRoles.includes(role) ? role : 'student';
+
     // Create user
     const user = await User.create({
       name,
       email,
       password,
-      role: role || 'student',
+      role: resolvedRole,
       ...(phone ? { phone } : {}),
     });
 

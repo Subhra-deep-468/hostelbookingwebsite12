@@ -46,7 +46,11 @@ const SignupPage = () => {
       const response = await api.post('/auth/register', formData);
       const { token, user } = response.data;
       login(user, token);
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       const isNetworkError = !error.response;
       setErrors({
@@ -110,6 +114,7 @@ const SignupPage = () => {
             <select name="role" value={formData.role} onChange={handleChange}>
               <option value="student">Student</option>
               <option value="owner">Hostel Owner</option>
+              <option value="admin">Platform admin</option>
             </select>
           </div>
 

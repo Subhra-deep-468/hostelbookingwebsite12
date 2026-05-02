@@ -8,17 +8,23 @@ const {
   getOwnerHostels,
   uploadHostelPhoto,
   deleteHostelPhoto,
+  getPendingHostels,
+  approveHostel,
+  rejectHostel,
 } = require('../controllers/hostelController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const upload = require('../config/multer');
 
 const router = express.Router();
 
 // Public routes
 router.get('/', getHostels);
-// Must be before "/:id" or Express treats "owner" as an id
+// Must be before "/:id" or Express treats "owner" / "admin" as an id
 router.get('/owner/my-hostels', protect, authorize('owner'), getOwnerHostels);
-router.get('/:id', getHostelById);
+router.get('/admin/pending', protect, authorize('admin'), getPendingHostels);
+router.put('/admin/:id/approve', protect, authorize('admin'), approveHostel);
+router.put('/admin/:id/reject', protect, authorize('admin'), rejectHostel);
+router.get('/:id', optionalAuth, getHostelById);
 
 // Protected routes
 router.post('/', protect, authorize('owner'), createHostel);

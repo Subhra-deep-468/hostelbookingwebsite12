@@ -1,3 +1,28 @@
+.approval-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.approval-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.approval-badge.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.approval-badge.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 .owner-dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;

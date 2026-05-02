@@ -5,6 +5,7 @@ const BookingOrder = require('../models/BookingOrder');
 const QuickPayOrder = require('../models/QuickPayOrder');
 const Booking = require('../models/Booking');
 const Hostel = require('../models/Hostel');
+const { hostelIsPubliclyVisible } = require('../utils/hostelVisibility');
 
 const ADVANCE_RUPEES = parseInt(process.env.BOOKING_ADVANCE_RUPEES || '1000', 10);
 const QUICK_PAY_RUPEES = parseInt(process.env.QUICK_PAY_DUMMY_RUPEES || '1000', 10);
@@ -38,6 +39,13 @@ exports.createBookingOrder = async (req, res) => {
     const hostel = await Hostel.findById(hostelId);
     if (!hostel) {
       return res.status(404).json({ success: false, message: 'Hostel not found' });
+    }
+
+    if (!hostelIsPubliclyVisible(hostel)) {
+      return res.status(403).json({
+        success: false,
+        message: 'This hostel is not available for booking until an administrator approves it.',
+      });
     }
 
     const room = hostel.roomTypes.find((r) => r.type === roomType);
@@ -164,6 +172,14 @@ exports.verifyBookingPayment = async (req, res) => {
       }
       paymentId = razorpay_payment_id;
       paymentMode = 'razorpay';
+    }
+
+    const hostelStill = await Hostel.findById(order.hostel);
+    if (!hostelStill || !hostelIsPubliclyVisible(hostelStill)) {
+      return res.status(400).json({
+        success: false,
+        message: 'This hostel is no longer available for booking.',
+      });
     }
 
     const booking = await Booking.create({
