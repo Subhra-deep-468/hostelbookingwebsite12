@@ -1,0 +1,347 @@
+/* Shared Stripe-style checkout form (demo UI) */
+.stripe-checkout-page {
+  align-items: center;
+  background: #f6f9fc;
+}
+
+.stripe-checkout-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.75rem 1.5rem 1.25rem;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 6px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stripe-link-pay {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #00d66f;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.stripe-link-brand {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.stripe-or-rule {
+  display: flex;
+  align-items: center;
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.stripe-or-rule::before,
+.stripe-or-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e6ebf1;
+}
+
+.stripe-or-rule span {
+  padding: 0 1rem;
+  font-size: 0.8rem;
+  color: #697386;
+  font-weight: 500;
+}
+
+.stripe-section {
+  margin-bottom: 1.25rem;
+}
+
+.stripe-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a1f36;
+  margin: 0 0 0.65rem 0;
+  letter-spacing: 0.02em;
+}
+
+.stripe-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #3c4257;
+  margin-bottom: 0.85rem;
+}
+
+.stripe-hint {
+  display: block;
+  font-weight: 400;
+  color: #697386;
+  font-size: 0.72rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.stripe-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.95rem;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1f36;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.stripe-input:focus {
+  outline: none;
+  border-color: #635bff;
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+}
+
+.stripe-card-wrap {
+  margin-top: 0.35rem;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stripe-input-card {
+  margin-top: 0;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #e0e6ed;
+}
+
+.stripe-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.stripe-card-row .stripe-input {
+  margin-top: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.stripe-card-row .stripe-input:first-child {
+  border-right: 1px solid #e0e6ed;
+}
+
+.stripe-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23697386' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.stripe-save-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  color: #3c4257;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+}
+
+.stripe-save-row input {
+  margin-top: 0.2rem;
+  accent-color: #635bff;
+}
+
+.stripe-save-row small {
+  display: block;
+  color: #697386;
+  font-weight: 400;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+}
+
+.stripe-form-error {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.stripe-pay-primary {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #635bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, filter 0.15s;
+}
+
+.stripe-pay-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.stripe-pay-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.stripe-pay-submit {
+  margin-bottom: 0.75rem;
+}
+
+.stripe-amount-inline {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #697386;
+  margin: 0 0 1rem 0;
+}
+
+.stripe-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #a3acba;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f3f7;
+  margin-top: 0.25rem;
+}
+
+.stripe-footer-sep {
+  margin: 0 0.35rem;
+}
+
+.stripe-back-link {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border: none;
+  background: none;
+  color: #635bff;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.stripe-back-link:hover {
+  text-decoration: underline;
+}
+
+.stripe-landing-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem 1.75rem;
+  text-align: center;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 6px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stripe-landing-card h1 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  color: #1a1f36;
+}
+
+.stripe-landing-lead {
+  color: #697386;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.stripe-landing-cta {
+  max-width: 280px;
+  margin: 0 auto 1rem;
+}
+
+.stripe-landing-hint {
+  font-size: 0.85rem;
+  color: #a3acba;
+  margin: 0;
+}
+
+.stripe-success-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 6px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stripe-success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #00d66f;
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 56px;
+  margin: 0 auto 1.25rem;
+  font-weight: 700;
+}
+
+.stripe-success-card h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: #1a1f36;
+}
+
+.stripe-success-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1f36;
+  margin: 0 0 0.75rem 0;
+}
+
+.stripe-success-note {
+  font-size: 0.9rem;
+  color: #697386;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.stripe-success-ref {
+  font-size: 0.85rem;
+  color: #3c4257;
+  margin: 0 0 1.5rem 0;
+  word-break: break-all;
+}
+
+.stripe-success-ref code {
+  font-size: 0.8rem;
+  background: #f6f9fc;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.stripe-success-card .stripe-pay-primary {
+  max-width: 220px;
+  margin: 0 auto;
+}

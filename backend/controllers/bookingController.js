@@ -3,48 +3,6 @@ const Booking = require('../models/Booking');
 const Hostel = require('../models/Hostel');
 const User = require('../models/User');
 
-// Create booking (Student only)
-exports.createBooking = async (req, res) => {
-  try {
-    const { hostelId, roomType, checkInDate, checkOutDate, message } = req.body;
-
-    // Validation
-    if (!hostelId || !roomType) {
-      return res.status(400).json({ success: false, message: 'Please provide hostel and room type' });
-    }
-
-    // Get hostel
-    const hostel = await Hostel.findById(hostelId);
-    if (!hostel) {
-      return res.status(404).json({ success: false, message: 'Hostel not found' });
-    }
-
-    // Find room type price
-    const room = hostel.roomTypes.find((r) => r.type === roomType);
-    if (!room) {
-      return res.status(404).json({ success: false, message: 'Room type not found' });
-    }
-
-    // Create booking
-    const booking = await Booking.create({
-      student: req.user.id,
-      hostel: hostelId,
-      roomType,
-      price: room.pricePerMonth,
-      checkInDate,
-      checkOutDate,
-      message,
-    });
-
-    res.status(201).json({
-      success: true,
-      booking,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
 // Get student bookings
 exports.getStudentBookings = async (req, res) => {
   try {

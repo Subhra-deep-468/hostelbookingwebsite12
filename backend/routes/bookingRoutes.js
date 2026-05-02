@@ -1,6 +1,5 @@
 const express = require('express');
 const {
-  createBooking,
   getStudentBookings,
   getOwnerBookings,
   updateBookingStatus,
@@ -10,8 +9,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Student routes
-router.post('/', protect, authorize('student'), createBooking);
+// Student routes (booking is created after advance payment — see POST /api/payments/booking-order)
 router.get('/student/my-bookings', protect, authorize('student'), getStudentBookings);
 router.delete('/:id', protect, authorize('student'), cancelBooking);
 

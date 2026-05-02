@@ -86,8 +86,18 @@ const StudentDashboard = () => {
                   <strong>Room Type:</strong> {booking.roomType}
                 </p>
                 <p>
-                  <strong>Price:</strong> ₹{booking.price}/month
+                  <strong>Monthly rent:</strong> ₹{booking.price}/month
                 </p>
+                {booking.advancePaidRupees != null && booking.advancePaidRupees > 0 && (
+                  <>
+                    <p>
+                      <strong>Advance paid (online):</strong> ₹{booking.advancePaidRupees}
+                    </p>
+                    <p>
+                      <strong>Due at hostel:</strong> ₹{booking.balanceDueAtHostelRupees} (pay when you visit)
+                    </p>
+                  </>
+                )}
                 <p>
                   <strong>Booked Date:</strong> {new Date(booking.createdAt).toLocaleDateString()}
                 </p>

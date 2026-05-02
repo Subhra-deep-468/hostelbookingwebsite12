@@ -9,6 +9,8 @@ const authRoutes = require('./routes/authRoutes');
 const hostelRoutes = require('./routes/hostelRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const ownerRoutes = require('./routes/ownerRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 
@@ -28,6 +30,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/owner', ownerRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {

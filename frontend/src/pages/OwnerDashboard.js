@@ -203,8 +203,18 @@ const OwnerDashboard = () => {
                       <strong>Room Type:</strong> {booking.roomType}
                     </p>
                     <p>
-                      <strong>Price:</strong> ₹{booking.price}/month
+                      <strong>Monthly rent:</strong> ₹{booking.price}/month
                     </p>
+                    {booking.advancePaidRupees != null && booking.advancePaidRupees > 0 && (
+                      <>
+                        <p>
+                          <strong>Student paid advance:</strong> ₹{booking.advancePaidRupees} ({booking.paymentMode})
+                        </p>
+                        <p>
+                          <strong>Collect at hostel:</strong> ₹{booking.balanceDueAtHostelRupees}
+                        </p>
+                      </>
+                    )}
                     <p>
                       <strong>Student Phone:</strong> {booking.student.phone || 'N/A'}
                     </p>

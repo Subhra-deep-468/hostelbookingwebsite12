@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import AdvanceCheckoutOverlay from '../components/AdvanceCheckoutOverlay';
 import './HostelDetailsPage.css';
 
 const HostelDetailsPage = () => {
@@ -13,11 +14,20 @@ const HostelDetailsPage = () => {
   const [selectedRoomType, setSelectedRoomType] = useState('');
   const [message, setMessage] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
+  const [checkoutPhase, setCheckoutPhase] = useState(null);
+  const [checkoutOrder, setCheckoutOrder] = useState(null);
+  const [checkoutPaymentRef, setCheckoutPaymentRef] = useState('');
   const [mainImage, setMainImage] = useState(0);
-
+  const [reviews, setReviews] = useState([]);
+  const [canRate, setCanRate] = useState(false);
+  const [myReview, setMyReview] = useState(null);
+  const [rateStars, setRateStars] = useState(5);
+  const [rateComment, setRateComment] = useState('');
+  const [rateLoading, setRateLoading] = useState(false);
+  const [rateMessage, setRateMessage] = useState('');
   useEffect(() => {
     fetchHostel();
+    fetchReviews();
   }, [id]);
 
   const fetchHostel = async () => {
@@ -35,7 +45,33 @@ const HostelDetailsPage = () => {
     }
   };
 
-  const handleBooking = async (e) => {
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get(`/reviews/hostel/${id}`);
+      setReviews(response.data.reviews || []);
+      setCanRate(!!response.data.canRate);
+      const mr = response.data.myReview || null;
+      setMyReview(mr);
+      if (mr) {
+        setRateStars(mr.rating);
+        setRateComment(mr.comment || '');
+      } else {
+        setRateStars(5);
+        setRateComment('');
+      }
+      setRateMessage('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const closeCheckout = () => {
+    setCheckoutPhase(null);
+    setCheckoutOrder(null);
+    setCheckoutPaymentRef('');
+  };
+
+  const startAdvanceCheckout = async (e) => {
     e.preventDefault();
 
     if (!user) {
@@ -48,25 +84,57 @@ const HostelDetailsPage = () => {
       return;
     }
 
-    setBookingLoading(true);
+    setCheckoutPaymentRef('');
+    setCheckoutPhase('loading');
     try {
-      await api.post('/bookings', {
+      const { data } = await api.post('/payments/booking-order', {
         hostelId: id,
         roomType: selectedRoomType,
         message,
+        forceMock: true,
       });
-
-      setBookingSuccess(true);
-      setSelectedRoomType('');
-      setMessage('');
-
-      setTimeout(() => {
-        setBookingSuccess(false);
-      }, 3000);
+      setCheckoutOrder(data);
+      setCheckoutPhase('form');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create booking');
+      alert(err.response?.data?.message || 'Failed to start payment');
+      setCheckoutPhase(null);
+      setCheckoutOrder(null);
+    }
+  };
+
+  const handleCheckoutVerified = (data) => {
+    setCheckoutPaymentRef(data.booking?.razorpayPaymentId || '');
+    setCheckoutPhase('success');
+    setBookingSuccess(true);
+    setMessage('');
+    setTimeout(() => setBookingSuccess(false), 6000);
+  };
+
+  const handleSubmitRating = async (e) => {
+    e.preventDefault();
+    if (!user || user.role !== 'student') {
+      alert('Only students can submit ratings');
+      return;
+    }
+    if (!canRate) {
+      alert('You can rate this hostel after the owner approves your booking.');
+      return;
+    }
+    setRateLoading(true);
+    setRateMessage('');
+    try {
+      await api.post('/reviews', {
+        hostelId: id,
+        rating: rateStars,
+        comment: rateComment.trim(),
+      });
+      setRateMessage('Thanks! Your rating was saved.');
+      await fetchHostel();
+      await fetchReviews();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to save rating');
     } finally {
-      setBookingLoading(false);
+      setRateLoading(false);
     }
   };
 
@@ -75,6 +143,8 @@ const HostelDetailsPage = () => {
   if (!hostel) return <div className="error">Hostel not found</div>;
 
   const selectedRoom = hostel.roomTypes.find((r) => r.type === selectedRoomType);
+  const advanceRupees = selectedRoom ? Math.min(1000, selectedRoom.pricePerMonth) : 0;
+  const balanceAtHostel = selectedRoom ? Math.max(0, selectedRoom.pricePerMonth - advanceRupees) : 0;
 
   return (
     <div className="hostel-details-page">
@@ -117,7 +187,14 @@ const HostelDetailsPage = () => {
           <h1>{hostel.name}</h1>
           <p className="location">📍 {hostel.location}</p>
           <div className="rating">
-            <span>⭐ {hostel.rating || 'No ratings'}</span>
+            <span>
+              ⭐{' '}
+              {hostel.reviews > 0
+                ? `${Number(hostel.rating).toFixed(1)} (${hostel.reviews} ${
+                    hostel.reviews === 1 ? 'review' : 'reviews'
+                  })`
+                : 'No ratings yet'}
+            </span>
           </div>
 
           <div className="amenities">
@@ -148,9 +225,19 @@ const HostelDetailsPage = () => {
           <div className="booking-card">
             <h3>Book Now</h3>
 
-            {bookingSuccess && <div className="success-message">✓ Booking request sent successfully!</div>}
+            {bookingSuccess && (
+              <div className="success-message">
+                ✓ Advance received — booking request sent! Pay the remaining balance when you arrive at the hostel.
+              </div>
+            )}
 
-            <form onSubmit={handleBooking}>
+            <p className="payment-explainer">
+              Pay <strong>₹{advanceRupees}</strong> now to confirm your request — you&apos;ll enter card details on the
+              next screen. The rest (<strong>₹{balanceAtHostel}</strong> for this month&apos;s rent) is paid at the
+              hostel when you visit.
+            </p>
+
+            <form onSubmit={startAdvanceCheckout}>
               <div className="form-group">
                 <label>Room Type</label>
                 <select value={selectedRoomType} onChange={(e) => setSelectedRoomType(e.target.value)}>
@@ -179,13 +266,99 @@ const HostelDetailsPage = () => {
                 />
               </div>
 
-              <button type="submit" className="btn-book" disabled={bookingLoading || !user}>
-                {bookingLoading ? 'Processing...' : user ? 'Send Booking Request' : 'Login to Book'}
+              <button
+                type="submit"
+                className="btn-book"
+                disabled={checkoutPhase === 'loading' || !user}
+              >
+                {checkoutPhase === 'loading'
+                  ? 'Opening checkout…'
+                  : user
+                  ? `Pay ₹${advanceRupees} advance & request booking`
+                  : 'Login to Book'}
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      <AdvanceCheckoutOverlay
+        open={checkoutPhase !== null}
+        phase={checkoutPhase}
+        hostelName={hostel.name}
+        order={checkoutOrder}
+        user={user}
+        paymentRef={checkoutPaymentRef}
+        onClose={closeCheckout}
+        onVerified={handleCheckoutVerified}
+      />
+
+      <section className="reviews-section" aria-labelledby="reviews-heading">
+        <h2 id="reviews-heading">Ratings &amp; reviews</h2>
+
+        {user?.role === 'student' && (
+          <div className="rate-card">
+            <h3>{myReview ? 'Update your rating' : 'Rate this hostel'}</h3>
+            {!canRate && (
+              <p className="rate-hint">
+                You can rate this hostel after the owner approves at least one of your bookings here.
+              </p>
+            )}
+            {canRate && (
+              <form onSubmit={handleSubmitRating} className="rate-form">
+                <div className="star-row" role="group" aria-label="Star rating">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={`star-btn ${n <= rateStars ? 'active' : ''}`}
+                      onClick={() => setRateStars(n)}
+                      aria-label={`${n} star${n === 1 ? '' : 's'}`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                  <span className="star-label">{rateStars} / 5</span>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="rate-comment">Comment (optional)</label>
+                  <textarea
+                    id="rate-comment"
+                    value={rateComment}
+                    onChange={(e) => setRateComment(e.target.value)}
+                    rows={3}
+                    maxLength={500}
+                    placeholder="Share your experience…"
+                  />
+                </div>
+                {rateMessage && <p className="rate-success">{rateMessage}</p>}
+                <button type="submit" className="btn-rate" disabled={rateLoading}>
+                  {rateLoading ? 'Saving…' : myReview ? 'Update rating' : 'Submit rating'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+
+        {reviews.length === 0 ? (
+          <p className="reviews-empty">No written reviews yet. Be the first once your stay is approved.</p>
+        ) : (
+          <ul className="review-list">
+            {reviews.map((rev) => (
+              <li key={rev.id} className="review-item">
+                <div className="review-meta">
+                  <span className="review-name">{rev.studentName}</span>
+                  <span className="review-stars" aria-label={`${rev.rating} out of 5`}>
+                    {'★'.repeat(rev.rating)}
+                    <span className="review-stars-dim">{'★'.repeat(5 - rev.rating)}</span>
+                  </span>
+                </div>
+                {rev.comment ? <p className="review-comment">{rev.comment}</p> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 };

@@ -40,6 +40,29 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    advancePaidRupees: {
+      type: Number,
+    },
+    balanceDueAtHostelRupees: {
+      type: Number,
+    },
+    razorpayOrderId: {
+      type: String,
+      default: '',
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: '',
+    },
+    paymentMode: {
+      type: String,
+      enum: ['none', 'mock', 'razorpay'],
+      default: 'none',
+    },
+    paymentCapturedAt: {
+      type: Date,
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

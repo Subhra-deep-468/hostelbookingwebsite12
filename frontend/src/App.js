@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import StudentDashboard from './pages/StudentDashboard';
 import OwnerDashboard from './pages/OwnerDashboard';
+import DummyPaymentPage from './pages/DummyPaymentPage';
 import './App.css';
 
 const ProtectedRoute = ({ element, requiredRole }) => {
@@ -53,6 +54,7 @@ function App() {
               path="/owner-dashboard"
               element={<ProtectedRoute element={<OwnerDashboard />} requiredRole="owner" />}
             />
+            <Route path="/dummy-payment" element={<ProtectedRoute element={<DummyPaymentPage />} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

@@ -1,0 +1,171 @@
+@import '../components/stripeCheckoutForm.css';
+
+.dummy-pay-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--bg);
+}
+
+.dummy-pay-loading {
+  text-align: center;
+  width: 100%;
+  color: var(--muted);
+}
+
+.dummy-pay-card {
+  max-width: 520px;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.75rem 1.5rem;
+}
+
+.dummy-pay-card h1 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.35rem;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.dummy-pay-lead {
+  color: rgba(15, 23, 42, 0.75);
+  line-height: 1.55;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.dummy-pay-notes {
+  margin: 0 0 1.25rem 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.dummy-pay-notes code {
+  font-size: 0.82rem;
+  background: rgba(15, 23, 42, 0.06);
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+}
+
+.dummy-pay-alert {
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.dummy-pay-alert-error {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--danger);
+}
+
+.dummy-pay-alert-ok {
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.22);
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.dummy-pay-ref code {
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+.dummy-pay-btn {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: var(--primary-contrast);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.dummy-pay-btn:hover:not(:disabled) {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.dummy-pay-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dummy-pay-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.dummy-pay-modal {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  max-width: 400px;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.dummy-pay-modal h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.dummy-pay-modal p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.dummy-pay-modal-amt {
+  font-size: 1.5rem;
+  margin: 0.5rem 0 1.25rem 0 !important;
+  color: var(--text) !important;
+}
+
+.dummy-pay-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.dummy-pay-btn-secondary {
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.dummy-pay-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dummy-pay-modal-actions .dummy-pay-btn {
+  width: auto;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+}
