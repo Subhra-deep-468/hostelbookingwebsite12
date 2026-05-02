@@ -16,13 +16,14 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getHostels);
+// Must be before "/:id" or Express treats "owner" as an id
+router.get('/owner/my-hostels', protect, authorize('owner'), getOwnerHostels);
 router.get('/:id', getHostelById);
 
 // Protected routes
 router.post('/', protect, authorize('owner'), createHostel);
 router.put('/:id', protect, authorize('owner'), updateHostel);
 router.delete('/:id', protect, authorize('owner'), deleteHostel);
-router.get('/owner/my-hostels', protect, authorize('owner'), getOwnerHostels);
 
 // Photo routes
 router.post('/:id/photos', protect, authorize('owner'), upload.single('photo'), uploadHostelPhoto);

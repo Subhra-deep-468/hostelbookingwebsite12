@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Hostel = require('../models/Hostel');
 
 // Create a new hostel (Owner only)
@@ -197,7 +198,8 @@ exports.deleteHostel = async (req, res) => {
 // Get hostels by owner
 exports.getOwnerHostels = async (req, res) => {
   try {
-    const hostels = await Hostel.find({ owner: req.user.id });
+    const ownerId = new mongoose.Types.ObjectId(req.user.id);
+    const hostels = await Hostel.find({ owner: ownerId });
 
     res.status(200).json({
       success: true,

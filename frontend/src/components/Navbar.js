@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, initializing } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +22,11 @@ const Navbar = () => {
           <Link to="/" className="nav-link">
             Home
           </Link>
-          {user ? (
+          {initializing ? (
+            <span className="nav-user" style={{ opacity: 0.7 }}>
+              Loading session...
+            </span>
+          ) : user ? (
             <>
               {user.role === 'student' && (
                 <Link to="/student-dashboard" className="nav-link">

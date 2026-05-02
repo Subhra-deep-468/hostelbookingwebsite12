@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -12,36 +12,28 @@ import OwnerDashboard from './pages/OwnerDashboard';
 import './App.css';
 
 const ProtectedRoute = ({ element, requiredRole }) => {
-  const { user } = useContext(AuthContext);
+  const { user, initializing } = useContext(AuthContext);
+
+  if (initializing) {
+    return (
+      <div className="app-loading" style={{ padding: '2rem', textAlign: 'center' }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/login" />;
   }
 
   if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return element;
 };
 
 function App() {
-  const { setUser, token } = useContext(AuthContext);
-
-  useEffect(() => {
-    // Load user on app initialization
-    if (token) {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (error) {
-          console.error('Failed to parse stored user:', error);
-        }
-      }
-    }
-  }, [token, setUser]);
-
   return (
     <Router>
       <div className="App">

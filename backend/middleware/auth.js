@@ -13,7 +13,17 @@ const protect = async (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded;
+    const rawId = decoded.id;
+    if (rawId == null || decoded.role == null) {
+      return res.status(401).json({ success: false, message: 'Not authorized to access this route' });
+    }
+    req.user = {
+      role: decoded.role,
+      id:
+        typeof rawId === 'object' && typeof rawId.toString === 'function'
+          ? rawId.toString()
+          : String(rawId),
+    };
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Not authorized to access this route' });

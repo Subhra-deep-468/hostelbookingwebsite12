@@ -86,13 +86,23 @@ exports.login = async (req, res) => {
   }
 };
 
-// Get Current User
+// Get Current User (same shape as login/register so client stays in sync with the JWT)
 exports.getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        isOwnerVerified: user.isOwnerVerified,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

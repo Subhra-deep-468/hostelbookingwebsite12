@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Hostel = require('../models/Hostel');
 const User = require('../models/User');
@@ -61,17 +62,55 @@ exports.getStudentBookings = async (req, res) => {
   }
 };
 
-// Get owner booking requests
+// Get owner booking requests (join via hostel.owner so it matches JWT user id reliably)
 exports.getOwnerBookings = async (req, res) => {
   try {
-    // Get all hostels owned by this user
-    const hostels = await Hostel.find({ owner: req.user.id });
-    const hostelIds = hostels.map((h) => h._id);
+    let ownerId;
+    try {
+      ownerId = new mongoose.Types.ObjectId(req.user.id);
+    } catch {
+      return res.status(400).json({ success: false, message: 'Invalid user id' });
+    }
 
-    // Get all bookings for these hostels
-    const bookings = await Booking.find({ hostel: { $in: hostelIds } })
-      .populate('hostel')
-      .populate('student', 'name email phone');
+    const bookings = await Booking.aggregate([
+      {
+        $lookup: {
+          from: Hostel.collection.name,
+          localField: 'hostel',
+          foreignField: '_id',
+          as: 'hostelDocs',
+        },
+      },
+      { $unwind: '$hostelDocs' },
+      { $match: { 'hostelDocs.owner': ownerId } },
+      {
+        $lookup: {
+          from: User.collection.name,
+          localField: 'student',
+          foreignField: '_id',
+          as: 'studentDocs',
+        },
+      },
+      { $unwind: '$studentDocs' },
+      {
+        $addFields: {
+          hostel: '$hostelDocs',
+          student: {
+            _id: '$studentDocs._id',
+            name: '$studentDocs.name',
+            email: '$studentDocs.email',
+            phone: '$studentDocs.phone',
+          },
+        },
+      },
+      {
+        $project: {
+          hostelDocs: 0,
+          studentDocs: 0,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+    ]);
 
     res.status(200).json({
       success: true,
