@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
+import Footer from '../components/Footer';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -44,6 +45,8 @@ const HomePage = () => {
           <p>Book your hostel in just a few clicks</p>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
